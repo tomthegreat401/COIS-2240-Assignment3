@@ -13,7 +13,12 @@ public class RentalSystem {
     private List<RentalRecord> rentalRecords = new ArrayList<>(); // Added to track all records
     private RentalHistory rentalHistory = new RentalHistory();
 
-    private RentalSystem() {}
+    private RentalSystem() {
+    	vehicles = new ArrayList<>();
+        customers = new ArrayList<>();
+        rentalHistory = new HashMap<>();
+        loadData(); // Load saved data on startup
+    }       
 
     public static RentalSystem getInstance() {
         if (instance == null) {
@@ -46,6 +51,79 @@ public class RentalSystem {
             System.err.println("Error saving rental record: " + e.getMessage());
         }
     }
+    
+    private void loadData() {
+        loadVehicles();
+        loadCustomers();
+        loadRentalRecords();
+    }
+
+    private void loadVehicles() {
+        File file = new File("vehicles.txt");
+        if (!file.exists()) return;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                // Assuming: id, make, model, year
+                String id = parts[0];
+                String make = parts[1];
+                String model = parts[2];
+                int year = Integer.parseInt(parts[3]);
+
+                Vehicle vehicle = new Vehicle(id, make, model, year);
+                vehicles.add(vehicle);
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading vehicles: " + e.getMessage());
+        }
+    }
+    
+    private void loadCustomers() {
+        File file = new File("customers.txt");
+        if (!file.exists()) return;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                // Assuming: id, name, phoneNumber
+                String id = parts[0];
+                String name = parts[1];
+                String phone = parts[2];
+
+                Customer customer = new Customer(id, name, phone);
+                customers.add(customer);
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading customers: " + e.getMessage());
+        }
+    }
+
+    private void loadRentalRecords() {
+        File file = new File("rental_records.txt");
+        if (!file.exists()) return;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                // Assuming: vehicleId, customerId, rentDate, returnDate
+                String vehicleId = parts[0];
+                String customerId = parts[1];
+                String rentDate = parts[2];
+                String returnDate = parts[3];
+
+                RentalRecord record = new RentalRecord(vehicleId, customerId, rentDate, returnDate);
+
+                rentalHistory.computeIfAbsent(vehicleId, k -> new ArrayList<>()).add(record);
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading rental records: " + e.getMessage());
+        }
+    }
+
 
     // Business methods
     public void addVehicle(Vehicle vehicle) {
