@@ -20,7 +20,6 @@ public class RentalSystem {
         customers = new ArrayList<>();
         rentalRecords = new ArrayList<>();
         rentalHistory = new HashMap<>();
-        loadData();
     }
 
     public static RentalSystem getInstance() {
@@ -248,4 +247,16 @@ public class RentalSystem {
         }
         return null;
     }
+    
+    public void resetForTesting() {
+        vehicles.clear();
+        customers.clear();
+        rentalRecords.clear();
+        rentalHistory.clear();
+        // Optionally delete contents of files too
+        new File("vehicles.txt").delete();
+        new File("customers.txt").delete();
+        new File("rental_records.txt").delete();
+    }
+
 }
