@@ -2,7 +2,17 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class RentalHistory {
+    private static RentalHistory instance = null;
     private List<RentalRecord> rentalRecords = new ArrayList<>();
+
+    private RentalHistory() {}
+
+    public static RentalHistory getInstance() {
+        if (instance == null) {
+            instance = new RentalHistory();
+        }
+        return instance;
+    }
 
     public void addRecord(RentalRecord record) {
         rentalRecords.add(record);

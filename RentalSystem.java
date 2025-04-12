@@ -8,9 +8,14 @@ public class RentalSystem {
     private List<Vehicle> vehicles;
     private List<Customer> customers;
     private List<RentalRecord> rentalRecords;
-    private Map<String, List<RentalRecord>> rentalHistory; // Fixed from custom class
+    private Map<String, List<RentalRecord>> rentalHistory;
 
+    // Private constructor to prevent instantiation
     private RentalSystem() {
+        if (instance != null) {
+            throw new RuntimeException("Use getInstance() method to get the single instance of this class.");
+        }
+
         vehicles = new ArrayList<>();
         customers = new ArrayList<>();
         rentalRecords = new ArrayList<>();
@@ -20,9 +25,24 @@ public class RentalSystem {
 
     public static RentalSystem getInstance() {
         if (instance == null) {
-            instance = new RentalSystem();
+            synchronized (RentalSystem.class) {
+                if (instance == null) {
+                    instance = new RentalSystem();
+                }
+            }
         }
         return instance;
+    }
+
+    // Prevent cloning
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException("Cloning of this singleton class is not allowed.");
+    }
+
+    // Prevent deserialization from breaking singleton
+    protected Object readResolve() {
+        return getInstance();
     }
 
     // --- Save Methods ---
@@ -160,33 +180,30 @@ public class RentalSystem {
         return true;
     }
 
-    public void rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
-        if (vehicle.getStatus() == Vehicle.VehicleStatus.AVAILABLE) {
-            vehicle.setStatus(Vehicle.VehicleStatus.RENTED);
-            RentalRecord record = new RentalRecord(vehicle, customer, date, amount, "RENT");
-            rentalRecords.add(record);
-            rentalHistory.computeIfAbsent(vehicle.getLicensePlate(), k -> new ArrayList<>()).add(record);
-            saveRecord(record);
-            System.out.println("Vehicle rented to " + customer.getCustomerName());
-        } else {
-            System.out.println("Vehicle is not available for renting.");
+    public boolean rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
+        if (vehicle.getStatus() != Vehicle.VehicleStatus.AVAILABLE) {
+            return false;
         }
+        if (vehicle instanceof Rentable rentableVehicle) {
+            rentableVehicle.rentVehicle();
+            RentalHistory.getInstance().addRecord(new RentalRecord(vehicle, customer, date, amount, "RENT"));
+            return true;
+        }
+        return false;
     }
 
-    public void returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double extraFees) {
-        if (vehicle.getStatus() == Vehicle.VehicleStatus.RENTED) {
-            vehicle.setStatus(Vehicle.VehicleStatus.AVAILABLE);
-            RentalRecord record = new RentalRecord(vehicle, customer, date, extraFees, "RETURN");
-            rentalRecords.add(record);
-            rentalHistory.computeIfAbsent(vehicle.getLicensePlate(), k -> new ArrayList<>()).add(record);
-            saveRecord(record);
-            System.out.println("Vehicle returned by " + customer.getCustomerName());
-        } else {
-            System.out.println("Vehicle is not rented.");
+    public boolean returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
+        if (vehicle.getStatus() != Vehicle.VehicleStatus.RENTED) {
+            return false;
         }
+        if (vehicle instanceof Rentable rentableVehicle) {
+            rentableVehicle.returnVehicle();
+            RentalHistory.getInstance().addRecord(new RentalRecord(vehicle, customer, date, amount, "RETURN"));
+            return true;
+        }
+        return false;
     }
 
-    // --- Display Methods ---
     public void displayVehicles(boolean onlyAvailable) {
         System.out.println("|     Type         |\tPlate\t|\tMake\t|\tModel\t|\tYear\t|");
         System.out.println("---------------------------------------------------------------------------------");

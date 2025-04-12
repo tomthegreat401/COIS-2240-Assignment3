@@ -61,5 +61,16 @@ public abstract class Vehicle {
     }
     
     public abstract String toFileString();
+    
+    public void rentVehicle() {
+        setStatus(VehicleStatus.RENTED);
+        System.out.println("Truck " + getLicensePlate() + " has been rented.");
+    }
+
+    public void returnVehicle() {
+        setStatus(VehicleStatus.AVAILABLE);
+        System.out.println("Truck " + getLicensePlate() + " has been returned.");
+    }
+
 
 }
