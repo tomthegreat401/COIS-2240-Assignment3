@@ -9,12 +9,13 @@ public class VehicleRentalApp {
 
         while (true) {
             System.out.println("\n1: Add Vehicle\n2: Add Customer\n3: Rent Vehicle\n4: Return Vehicle\n5: Display Available Vehicles\n6: Show Rental History\n7: Exit");
+            System.out.println("Enter a number from the above menu--> ");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
             switch (choice) {
                 case 1:
-                    System.out.println("  1: Car\n  2: Motorcycle\n  3: Truck");
+                    System.out.println("  1: Car\n  2: Motorcycle\n  3: Truck\n--> ");
                     int type = scanner.nextInt();
                     scanner.nextLine();
 
@@ -56,11 +57,11 @@ public class VehicleRentalApp {
 
                 case 2:
                     System.out.print("Enter customer ID: ");
-                    String cid = scanner.nextLine();
+                    String cID = scanner.nextLine();
                     System.out.print("Enter name: ");
                     String cname = scanner.nextLine();
 
-                    system.addCustomer(new Customer(Integer.parseInt(cid), cname));
+                    system.addCustomer(new Customer(Integer.parseInt(cID), cname));
                     System.out.println("Customer added.");
                     break;
 

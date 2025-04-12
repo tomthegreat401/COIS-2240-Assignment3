@@ -30,4 +30,8 @@ public class RentalRecord {
                " | Date: " + recordDate + 
                " | Amount: $" + totalAmount;
     }
+
+    public String toFileString() {
+        return recordType + "," + vehicle.getLicensePlate() + "," + customer.getCustomerId() + "," + recordDate + "," + totalAmount;
+    }
 }

@@ -27,4 +27,9 @@ public class Truck extends Vehicle implements Rentable {
         setStatus(VehicleStatus.AVAILABLE);
         System.out.println("Truck " + getLicensePlate() + " has been returned.");
     }
+
+    @Override
+    public String toFileString() {
+        return "Truck," + getLicensePlate() + "," + getMake() + "," + getModel() + "," + getYear() + "," + cargoCapacity;
+    }
 }

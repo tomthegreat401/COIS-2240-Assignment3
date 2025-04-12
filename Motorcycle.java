@@ -26,4 +26,10 @@ public class Motorcycle extends Vehicle implements Rentable {
         setStatus(VehicleStatus.AVAILABLE);
         System.out.println("Motorcycle " + getLicensePlate() + " has been returned.");
     }
+    
+    @Override
+    public String toFileString() {
+        return "Motorcycle," + getLicensePlate() + "," + getMake() + "," + getModel() + "," + getYear() + "," + hasSidecar;
+    }
+
 }

@@ -26,4 +26,10 @@ public class Car extends Vehicle implements Rentable {
         setStatus(VehicleStatus.AVAILABLE);
         System.out.println("Car " + getLicensePlate() + " has been returned.");
     }
+    
+    @Override
+    public String toFileString() {
+        return "Car," + getLicensePlate() + "," + getMake() + "," + getModel() + "," + getYear() + "," + numSeats;
+    }
+
 }
